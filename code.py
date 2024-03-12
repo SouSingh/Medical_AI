@@ -72,6 +72,15 @@ def contract_analysis_w_fact_checking(text):
     return {"status": "success", "message": "Contract analysis successful", "model_response": contract_results}
 
 
+@app.post("/embedd")
+async def predict():
+    try: 
+        dor = search_and_query()
+        return {"user_content": dor}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/predict")
 async def predict(data: dict):
     try:

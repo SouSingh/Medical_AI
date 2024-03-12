@@ -39,28 +39,27 @@ def contract_analysis_w_fact_checking(text):
     # Perform contract analysis using query_weaviate (assuming it's a function)
     quert_instance = query_weaviate(text)
 
-    # Extract relevant information from the Weaviate response
-    contract_results = [{
-              "LLM Response": quert_instance.response,
-              "Source_node": {
-                "Page_number": quert_instance.source_nodes[0].node.metadata.get('page_label', ''),
-                "File_Name": quert_instance.source_nodes[0].node.metadata.get('file_name', ''),
-                "Text": quert_instance.source_nodes[0].node.text,
-                "Start_Char": quert_instance.source_nodes[0].node.start_char_idx,
-                "End_Char": quert_instance.source_nodes[0].node.end_char_idx,
-                "Score_Matching": quert_instance.source_nodes[0].score}
-        }]
+    llmresponse = quert_instance.response
+    page = quert_instance.source_nodes[0].node.metadata.get('page_label', '')
+    file_name = quert_instance.source_nodes[0].node.metadata.get('file_name', '')
+    text = quert_instance.source_nodes[0].node.text
+    start_char = quert_instance.source_nodes[0].node.start_char_idx
+    end_char = quert_instance.source_nodes[0].node.end_char_idx
+    score = quert_instance.source_nodes[0].score
 
-    # Return a standardized response
-    return {"status": "success", "message": "Contract analysis successful", "model_response": contract_results}
+    return llmresponse, page, file_name, text, start_char, end_char, score
 
 def main():
-    st.title("Contract Analysis with Fact Checking")
+    st.title("Easework chat")
 
     user_message = st.text_input("Enter your text:")
-    if st.button("Analyze Contract"):
-        result = contract_analysis_w_fact_checking(user_message)
-        st.json(result)
+    if st.button("Analyze"):
+        llmresponse, page, file_name, text, start_char, end_char, score = contract_analysis_w_fact_checking(user_message)
+        st.write(f"LLM Response: {llmresponse}")
+        st.write(f"Text: {text}")
+        st.write(f"Document Name: {file_name}")
+        st.write(f"Page Number: {page}")
+        st.write(f"Start Coordination: {start_char}, End Coordination: {end_char}, Score: {score}")
 
 if __name__ == "__main__":
     main()
